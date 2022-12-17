@@ -32,7 +32,8 @@ async function main() {
     const nick_exp = "\\b" + process.env.IRC_NICK + "\\b[,:]?"
     if (event.message.match(new RegExp(nick_exp))) {
       const message = event.message.replace(new RegExp(nick_exp), "")
-      event.reply(await api.sendMessage(message))
+      let remaining = await api.sendMessage(message);
+      event.reply(`${event.nick}: ${remaining}`);
     }
 
   });
