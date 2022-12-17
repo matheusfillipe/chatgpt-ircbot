@@ -2,16 +2,16 @@ require('dotenv').config()
 const IRC = require("irc-framework")
 
 async function main() {
-  const { ChatGPTAPI, getOpenAIAuth } = await import('chatgpt')
+  const { ChatGPTAPIBrowser } = await import('chatgpt')
   console.log("Creating bot...");
-  const openAIAuth = await getOpenAIAuth({
+
+  const api = new ChatGPTAPIBrowser({
     email: process.env.OPENAI_EMAIL,
     password: process.env.OPENAI_PASSWORD
   })
-  console.log("Bot created")
+  await api.init()
 
-  const api = new ChatGPTAPI({ ...openAIAuth })
-  await api.ensureAuth()
+  console.log("Bot created")
 
 
   console.log("Connecting to IRC...")
