@@ -2,15 +2,14 @@ require('dotenv').config()
 const IRC = require("irc-framework")
 
 async function main() {
-  const { ChatGPTAPIBrowser } = await import('chatgpt')
+  const {ChatGPTAPIBrowser} = await import('chatgpt')
   console.log("Creating bot...");
 
   const api = new ChatGPTAPIBrowser({
     email: process.env.OPENAI_EMAIL,
-    password: process.env.OPENAI_PASSWORD
+    password: process.env.OPENAI_PASSWORD,
   })
-  await api.init()
-
+  await api.initSession()
   console.log("Bot created")
 
 
@@ -18,6 +17,7 @@ async function main() {
   var bot = new IRC.Client();
   var channel_names = process.env.IRC_CHANNELS.split(",")
   var buffers = [];
+  var conversations = {};
 
   bot.connect({
     host: process.env.IRC_HOST,
@@ -32,8 +32,12 @@ async function main() {
     const nick_exp = "\\b" + process.env.IRC_NICK + "\\b[,:]?"
     if (event.message.match(new RegExp(nick_exp))) {
       const message = event.message.replace(new RegExp(nick_exp), "")
-      let remaining = await api.sendMessage(message);
-      event.reply(`${event.nick}: ${remaining}`);
+      let res = await api.sendMessage(message, {
+        timeoutMs: 2 * 60 * 1000,
+        ...conversations[event.nick]
+      });
+      event.reply(`${event.nick}: ${res.response}`);
+      conversations[event.nick] = {conversationId: res.conversationId, parentMessageId: res.messageId};
     }
 
   });
