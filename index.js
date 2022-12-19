@@ -30,16 +30,20 @@ async function main() {
       event.reply('Hi!');
     }
     const nick_exp = "\\b" + process.env.IRC_NICK + "\\b[,:]?"
-    if (event.message.match(new RegExp(nick_exp))) {
-      const message = event.message.replace(new RegExp(nick_exp), "")
-      let res = await api.sendMessage(message, {
-        timeoutMs: 2 * 60 * 1000,
-        ...conversations[event.nick]
-      });
-      event.reply(`${event.nick}: ${res.response}`);
-      conversations[event.nick] = {conversationId: res.conversationId, parentMessageId: res.messageId};
+    if (!event.message.match(new RegExp(nick_exp))) {
+      return
     }
-
+      const message = event.message.replace(new RegExp(nick_exp), "")
+      try {
+        let res = await api.sendMessage(message, {
+          timeoutMs: 2 * 60 * 1000,
+          ...conversations[event.nick]
+        });
+        event.reply(`${event.nick}: ${res.response}`);
+        conversations[event.nick] = {conversationId: res.conversationId, parentMessageId: res.messageId};
+      } catch (e) {
+        event.reply(`${event.nick}: ${e.message}`);
+      }
   });
 
 
