@@ -36,7 +36,7 @@ async function main() {
       const message = event.message.replace(new RegExp(nick_exp), "")
       try {
         let res = await api.sendMessage(message, {
-          timeoutMs: 2 * 60 * 1000,
+          timeoutMs: 3 * 60 * 1000,
           ...conversations[event.nick]
         });
         event.reply(`${event.nick}: ${res.response}`);
