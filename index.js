@@ -2,16 +2,15 @@ require('dotenv').config()
 const IRC = require("irc-framework")
 
 async function main() {
-  const {ChatGPTAPIBrowser} = await import('chatgpt')
   console.log("Creating bot...");
 
+  const {ChatGPTAPIBrowser} = await import('chatgpt')
   const api = new ChatGPTAPIBrowser({
     email: process.env.OPENAI_EMAIL,
     password: process.env.OPENAI_PASSWORD,
   })
   await api.initSession()
   console.log("Bot created")
-
 
   console.log("Connecting to IRC...")
   var bot = new IRC.Client();
@@ -23,7 +22,8 @@ async function main() {
     host: process.env.IRC_HOST,
     port: process.env.IRC_PORT,
     nick: process.env.IRC_NICK,
-    username: process.env.IRC_NICK
+    username: process.env.IRC_NICK,
+    password: process.env.IRC_PASSWORD,
   });
 
   bot.on('message', async function (event) {
@@ -35,13 +35,14 @@ async function main() {
       return
     }
       const message = event.message.replace(new RegExp(nick_exp), "")
+      const key = event.nick + event.target
       try {
         let res = await api.sendMessage(message, {
           timeoutMs: 3 * 60 * 1000,
-          ...conversations[event.nick]
+          ...conversations[key]
         });
         event.reply(`${event.nick}: ${res.response}`);
-        conversations[event.nick] = {conversationId: res.conversationId, parentMessageId: res.messageId};
+        conversations[key] = {conversationId: res.conversationId, parentMessageId: res.messageId};
       } catch (e) {
         event.reply(`${event.nick}: ${e.message}`);
       }
@@ -52,6 +53,7 @@ async function main() {
     console.log("Connected to IRC")
     console.log("Joining channels...")
     for (const channel_name of channel_names) {
+      console.log(`Joining ${channel_name}`)
       var channel = bot.channel(channel_name);
       channel.join();
       channel.say('Hi! Ask me anything.');
