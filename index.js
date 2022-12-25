@@ -23,6 +23,7 @@ async function main() {
     host: process.env.IRC_HOST,
     port: process.env.IRC_PORT,
     nick: process.env.IRC_NICK,
+    username: process.env.IRC_NICK
   });
 
   bot.on('message', async function (event) {
