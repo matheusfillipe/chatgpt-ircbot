@@ -50,6 +50,8 @@ async function main() {
 
 
   bot.on('registered', function () {
+    // Raw message to set bot flag
+    bot.raw(`MODE ${process.env.IRC_NICK} +B`);
     console.log("Connected to IRC")
     console.log("Joining channels...")
     for (const channel_name of channel_names) {
