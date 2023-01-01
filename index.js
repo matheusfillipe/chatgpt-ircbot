@@ -41,6 +41,12 @@ async function main() {
           timeoutMs: 3 * 60 * 1000,
           ...conversations[key]
         });
+        if (res === undefined) {
+          res = await api.sendMessage(message, {
+            timeoutMs: 3 * 60 * 1000,
+            ...conversations[key]
+          });
+        }
         event.reply(`${event.nick}: ${res.response}`);
         conversations[key] = {conversationId: res.conversationId, parentMessageId: res.messageId};
       } catch (e) {
