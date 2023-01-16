@@ -17,6 +17,7 @@ async function main() {
   var channel_names = process.env.IRC_CHANNELS.split(",")
   var buffers = [];
   var conversations = {};
+  var newcomers = new Set();
 
   bot.connect({
     host: process.env.IRC_HOST,
@@ -26,9 +27,15 @@ async function main() {
     password: process.env.IRC_PASSWORD,
   });
 
+  bot.on("join", function(event) {
+    newcomers.add(event.nick)
+  })
+
   bot.on('message', async function (event) {
-    if (event.message.indexOf('hello') === 0) {
-      event.reply('Hi!');
+    // If is first greeting of a user
+    if (newcomers.has(event.nick) && event.message.match(new RegExp("(hi|hello|yo|howdy|hey guys|namaste)", "i"))) {
+      newcomers.delete(event.nick)
+      bot.say(event.target, "Hi " + event.nick + "! Welcome to the chat.")
     }
     const nick_exp = "\\b" + process.env.IRC_NICK + "\\b[,:]?"
     if (!event.message.match(new RegExp(nick_exp))) {
