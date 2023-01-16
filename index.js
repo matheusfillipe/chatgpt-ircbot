@@ -33,7 +33,7 @@ async function main() {
 
   bot.on('message', async function (event) {
     // If is first greeting of a user
-    if (newcomers.has(event.nick) && event.message.match(new RegExp("(hi|hello|yo|howdy|hey guys|namaste)", "i"))) {
+    if (newcomers.has(event.nick) && event.message.match(new RegExp("\\b(hi|hello|yo|howdy|hey guys|namaste)\\b", "i"))) {
       newcomers.delete(event.nick)
       bot.say(event.target, "Hi " + event.nick + "! Welcome to the chat.")
     }
