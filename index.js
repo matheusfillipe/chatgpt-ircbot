@@ -52,7 +52,7 @@ async function main() {
           .filter(i => i);
         lines.map(line =>
           [...lineBreak(line, {
-            bytes: 350,
+            bytes: 250,
             allowBreakingWords: false,
             allowBreakingGraphemes: true,
           })]
@@ -90,6 +90,7 @@ async function main() {
       conversations[key] = {conversationId: res.conversationId, parentMessageId: res.messageId};
     } catch (e) {
       event.reply(`${event.nick}: ${e.message}`);
+      conversations[key] = {};
     }
   });
 
