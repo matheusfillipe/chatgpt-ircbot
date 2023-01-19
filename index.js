@@ -1,5 +1,6 @@
 require('dotenv').config()
 const IRC = require("irc-framework")
+const lineBreak = require("irc-framework/src/linebreak").lineBreak;
 
 async function main() {
   console.log("Creating bot...");
@@ -27,7 +28,7 @@ async function main() {
     password: process.env.IRC_PASSWORD,
   });
 
-  bot.on("join", function(event) {
+  bot.on("join", function (event) {
     newcomers.add(event.nick)
   })
 
@@ -42,24 +43,54 @@ async function main() {
     if (!event.message.match(new RegExp(nick_exp))) {
       return
     }
-      const message = event.message.replace(new RegExp(nick_exp), "")
-      const key = event.nick + event.target
-      try {
-        let res = await api.sendMessage(message, {
+    const message = event.message.replace(new RegExp(nick_exp), "")
+    const key = event.nick + event.target
+    try {
+      const splitResponse = (response) => {
+        let lines = response
+          .split(/\r\n|\n|\r/)
+          .filter(i => i);
+        lines.map(line =>
+          [...lineBreak(line, {
+            bytes: 350,
+            allowBreakingWords: false,
+            allowBreakingGraphemes: true,
+          })]
+        )
+        return Array.from(lines.reduce((acc, val) => acc.concat(val), []))
+      }
+
+      var linesSent = 0
+      const reply = async (res, final = false) => {
+        if (!res.response) {
+          return
+        }
+        let lines = splitResponse(res.response)
+        if (lines.length > linesSent + 1 || final) {
+          let end = final ? lines.length : lines.length - 1
+          for (let i = linesSent; i < end; i++) {
+            event.reply(`${event.nick}: ${lines[i]}`)
+          }
+          linesSent = end
+        }
+      }
+      let res = await api.sendMessage(message, {
+        timeoutMs: 3 * 60 * 1000,
+        onProgress: reply,
+        ...conversations[key]
+      });
+      if (res === undefined) {
+        res = await api.sendMessage(message, {
           timeoutMs: 3 * 60 * 1000,
+          onProgress: reply,
           ...conversations[key]
         });
-        if (res === undefined) {
-          res = await api.sendMessage(message, {
-            timeoutMs: 3 * 60 * 1000,
-            ...conversations[key]
-          });
-        }
-        event.reply(`${event.nick}: ${res.response}`);
-        conversations[key] = {conversationId: res.conversationId, parentMessageId: res.messageId};
-      } catch (e) {
-        event.reply(`${event.nick}: ${e.message}`);
       }
+      reply(res, true)
+      conversations[key] = {conversationId: res.conversationId, parentMessageId: res.messageId};
+    } catch (e) {
+      event.reply(`${event.nick}: ${e.message}`);
+    }
   });
 
 
