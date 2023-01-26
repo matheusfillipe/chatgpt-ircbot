@@ -55,11 +55,11 @@ async function main() {
     const key = event.nick + event.target
     if (message == "reset") {
       conversations[key] = {};
-      bot.say(event.target, "Conversation reset.")
+      bot.say(event.target, `${event.nick}: Conversation reset.`)
       return
     }
     if (message == "help") {
-      bot.say(event.target, "You can say 'reset' to reset the conversation or just normally talk to me and ask questions")
+      bot.say(event.target, `${event.nick}: You can say 'reset' to reset the conversation or just normally talk to me and ask questions`)
       return
     }
     if (message.length == 0) {
