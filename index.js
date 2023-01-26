@@ -112,7 +112,9 @@ async function main() {
     } catch (e) {
       event.reply(`${event.nick}: ${e.message}`);
       conversations[key] = {};
+      return;
     }
+    event.reply("-----------------------------")
   });
 
 
