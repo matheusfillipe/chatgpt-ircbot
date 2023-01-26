@@ -30,6 +30,13 @@ async function main() {
 
   bot.on("join", function (event) {
     newcomers.add(event.nick)
+    const key = event.nick + event.target
+    conversations[key] = {};
+  })
+
+  bot.on("part", function (event) {
+    const key = event.nick + event.target
+    conversations[key] = {};
   })
 
   bot.on('message', async function (event) {
@@ -39,12 +46,26 @@ async function main() {
     }
     newcomers.delete(event.nick)
 
+
     const nick_exp = "\\b" + process.env.IRC_NICK + "\\b[,:]?"
     if (!event.message.match(new RegExp(nick_exp))) {
       return
     }
-    const message = event.message.replace(new RegExp(nick_exp), "")
+    const message = event.message.replace(new RegExp(nick_exp), "").trim()
     const key = event.nick + event.target
+    if (message == "reset") {
+      conversations[key] = {};
+      bot.say(event.target, "Conversation reset.")
+      return
+    }
+    if (message == "help") {
+      bot.say(event.target, "You can say 'reset' to reset the conversation or just normally talk to me and ask questions")
+      return
+    }
+    if (message.length == 0) {
+      return
+    }
+
     try {
       const splitResponse = (response) => {
         let lines = response
