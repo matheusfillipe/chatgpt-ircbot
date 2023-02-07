@@ -106,7 +106,10 @@ async function main() {
         });
       }
       reply(res, true)
-      conversations[key] = {conversationId: res.conversationId, parentMessageId: res.messageId};
+      conversations[key] = {
+        conversationId: res.conversationId,
+        parentMessageId: res.id,
+      }
     } catch (e) {
       event.reply(`${event.nick}: ${e.message}`);
       conversations[key] = {};
