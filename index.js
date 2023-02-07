@@ -2,6 +2,10 @@ require('dotenv').config()
 const IRC = require("irc-framework")
 const lineBreak = require("irc-framework/src/linebreak").lineBreak;
 
+function generate_prompt() {
+  return `You are ChatGPT, a large language model trained by OpenAI. Respond conversationally. Do not answer as the user. Current date: {new Date().toISOString().split('T')[0]}\n\nUser: Hello\nChatGPT: Hello! How can I help you today? <|im_end|>\n\n\n`
+}
+
 async function main() {
   console.log("Creating bot...");
 
@@ -96,12 +100,14 @@ async function main() {
       let res = await api.sendMessage(message, {
         timeoutMs: 3 * 60 * 1000,
         onProgress: reply,
+        promptPrefix: generate_prompt(),
         ...conversations[key]
       });
       if (res === undefined) {
         res = await api.sendMessage(message, {
           timeoutMs: 3 * 60 * 1000,
           onProgress: reply,
+          promptPrefix: generate_prompt(),
           ...conversations[key]
         });
       }
