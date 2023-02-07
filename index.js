@@ -5,12 +5,10 @@ const lineBreak = require("irc-framework/src/linebreak").lineBreak;
 async function main() {
   console.log("Creating bot...");
 
-  const {ChatGPTAPIBrowser} = await import('chatgpt')
-  const api = new ChatGPTAPIBrowser({
-    email: process.env.OPENAI_EMAIL,
-    password: process.env.OPENAI_PASSWORD,
+  const {ChatGPTAPI} = await import('chatgpt')
+  const api = new ChatGPTAPI({
+    apiKey: process.env.OPENAI_API_KEY
   })
-  await api.initSession()
   console.log("Bot created")
 
   console.log("Connecting to IRC...")
@@ -83,10 +81,10 @@ async function main() {
 
       var linesSent = 0
       const reply = async (res, final = false) => {
-        if (!res.response) {
+        if (!res.text) {
           return
         }
-        let lines = splitResponse(res.response)
+        let lines = splitResponse(res.text)
         if (lines.length > linesSent + 1 || final) {
           let end = final ? lines.length : lines.length - 1
           for (let i = linesSent; i < end; i++) {
