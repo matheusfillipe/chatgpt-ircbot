@@ -14,7 +14,7 @@
   "author": "matheusfilliepag",
   "license": "MIT",
   "dependencies": {
-    "chatgpt": "^4.1.1",
+    "chatgpt": "^4.2.0",
     "dotenv": "^16.0.3",
     "irc-framework": "^4.12.1",
     "puppeteer": "^19.4.1"
