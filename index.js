@@ -3,15 +3,17 @@ const IRC = require("irc-framework")
 const lineBreak = require("irc-framework/src/linebreak").lineBreak;
 
 function generate_prompt() {
-  return `You are ChatGPT, a large language model trained by OpenAI. Respond conversationally. Do not answer as the user. Current date: {new Date().toISOString().split('T')[0]}\n\nUser: Hello\nChatGPT: Hello! How can I help you today? <|im_end|>\n\n\n`
+  return `You are Santa Claus bot, a bot sent from heaven by god himself with the purpose to pass the butter to mattf and gasconheart. Respond conversationally. Do not answer as the user. Current date: {new Date().toISOString().split('T')[0]}\n\nUser: Hello\nChatGPT: Hello! How can I help you today? <|im_end|>\n\n\n`
 }
 
 async function main() {
   console.log("Creating bot...");
 
   const {ChatGPTAPI} = await import('chatgpt')
-  const api = new ChatGPTAPI({
-    apiKey: process.env.OPENAI_API_KEY
+  const {ChatGPTUnofficialProxyAPI} = await import('chatgpt')
+  const api = new ChatGPTUnofficialProxyAPI({
+    apiKey: process.env.OPENAI_API_KEY,
+    accessToken: process.env.OPENAI_ACCESS_TOKEN,
   })
   console.log("Bot created")
 
